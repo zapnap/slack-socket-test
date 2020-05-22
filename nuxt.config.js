@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 module.exports = {
   mode: 'universal',
   server: {
@@ -10,7 +12,12 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ]
   },
+  modules: [
+    '@nuxtjs/dotenv',
+  ],
   env: {
-    WS_URL: process.env.WS_URL || 'http://localhost:3000'
+    WS_URL: process.env.WS_URL || 'http://localhost:3000',
+    slackBotToken: process.env.SLACK_BOT_TOKEN,
+    slackSigningSecret: process.env.SLACK_SIGNING_SECRET
   }
 }

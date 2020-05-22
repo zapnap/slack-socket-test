@@ -7,6 +7,9 @@
     "post-update": "yarn upgrade --latest"
   },
   "dependencies": {
+    "@nuxtjs/dotenv": "^1.4.1",
+    "@slack/events-api": "^2.3.3",
+    "dotenv": "^8.2.0",
     "express": "^4.14.0",
     "nuxt": "latest",
     "socket.io": "^1.7.2",

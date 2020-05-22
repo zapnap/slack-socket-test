@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const http = require('http')
 
 const { Nuxt, Builder } = require('nuxt')
@@ -10,6 +12,40 @@ const isProd = process.env.NODE_ENV === 'production'
 const app = express()
 const server = http.createServer(app)
 const io = SocketIO(server)
+
+const messages = []
+
+const { createEventAdapter } = require('@slack/events-api')
+const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET)
+
+app.use('/slack/events', slackEvents.expressMiddleware())
+
+
+// Socket.io
+io.on('connection', (socket) => {
+  socket.on('last-messages', function (fn) {
+    fn(messages.slice(-50))
+  })
+  socket.on('send-message', function (message) {
+    messages.push(message)
+    socket.broadcast.emit('new-message', message)
+  })
+  slackEvents.on('message', async (event) => {
+    try {
+      console.log('new message from slack')
+      console.log(event)
+      const message = {
+        date: new Date().toJSON(),
+        text: event.text
+      }
+      messages.push(message)
+      socket.broadcast.emit('new-message', message)
+    } catch (e) {
+      console.log('slack incoming - ERROR!')
+      console.log(e)
+    }
+  })
+})
 
 // We instantiate Nuxt.js with the options
 const config = require('./nuxt.config.js')
@@ -29,15 +65,3 @@ async function start() {
   console.log('Server listening on localhost:' + port) // eslint-disable-line no-console
 }
 start()
-
-// Socket.io
-const messages = []
-io.on('connection', (socket) => {
-  socket.on('last-messages', function (fn) {
-    fn(messages.slice(-50))
-  })
-  socket.on('send-message', function (message) {
-    messages.push(message)
-    socket.broadcast.emit('new-message', message)
-  })
-})
