@@ -10,7 +10,7 @@
     "@nuxtjs/dotenv": "^1.4.1",
     "@slack/events-api": "^2.3.3",
     "dotenv": "^8.2.0",
-    "express": "^4.14.0",
+    "express": "^4.17.3",
     "nuxt": "latest",
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2"
